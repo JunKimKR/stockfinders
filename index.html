@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERPUNK NEON BEATMAKER</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Noto Sans & Orbitron for Cyberpunk Look -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        /* Custom Glowing Effects */
+        .neon-glow-pink {
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.6);
+        }
+        .neon-glow-blue {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.6);
+        }
+        .neon-glow-amber {
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+        }
+        .neon-glow-emerald {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+        }
+        .neon-glow-purple {
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+        }
+        /* Hide default range slider styling to build neon custom sliders */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #1e293b;
+            height: 6px;
+            border-radius: 9999px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #38bdf8;
+            cursor: pointer;
+            box-shadow: 0 0 8px #38bdf8;
+            transition: all 0.1s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 12px #38bdf8;
+        }
+    </style>
+</head>
+<body class="bg-[#030712] text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden relative">
+
+    <!-- Cyberpunk grid background decor -->
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f293710_1px,transparent_1px),linear-gradient(to_bottom,#1f293710_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none"></div>
+
+    <!-- Header & Brand -->
+    <header class="border-b border-slate-900 bg-slate-950/80 backdrop-blur-md relative z-10 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-pink-500 to-violet-600 flex items-center justify-center shadow-lg shadow-pink-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="orbitron font-black text-2xl tracking-wider bg-gradient-to-r from-pink-500 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                        NEONWAVE STUDIO
+                    </h1>
+                    <p class="text-xs text-slate-500 tracking-widest uppercase">Pure Web Audio Synthesized Sequencer</p>
+                </div>
+            </div>
+
+            <!-- Global Action Panel -->
+            <div class="flex flex-wrap items-center gap-3">
+                <button id="btn-play" class="orbitron font-bold text-xs px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 hover:from-emerald-400 hover:to-teal-400 shadow-md shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-2">
+                    <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                        <path d="M4.5 3.5v13L16.5 10z"/>
+                    </svg>
+                    <span id="play-text">START SYNTH ENGINE</span>
+                </button>
+                <button id="btn-clear" class="orbitron font-bold text-xs px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all border border-slate-700 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    CLEAR ALL
+                </button>
+                <button id="btn-random" class="orbitron font-bold text-xs px-4 py-2.5 rounded-lg bg-indigo-900/40 hover:bg-indigo-900/60 text-indigo-200 transition-all border border-indigo-700/50 flex items-center gap-2">
+                    🎲 RANDOM
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="max-w-7xl w-full mx-auto p-4 md:p-6 flex-grow flex flex-col gap-6 relative z-10">
+        
+        <!-- Preset Quick Selection -->
+        <div class="bg-slate-950/70 border border-slate-900 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">⚡ QUICK DEMO PRESETS:</span>
+            </div>
+            <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                <button onclick="loadPreset('techno')" class="flex-1 md:flex-initial text-xs font-bold px-4 py-2 rounded-lg bg-pink-950/40 border border-pink-900/50 text-pink-400 hover:bg-pink-900/30 transition">
+                    🎹 Dark Techno
+                </button>
+                <button onclick="loadPreset('synthwave')" class="flex-1 md:flex-initial text-xs font-bold px-4 py-2 rounded-lg bg-cyan-950/40 border border-cyan-900/50 text-cyan-400 hover:bg-cyan-900/30 transition">
+                    🌌 Synthwave Retro
+                </button>
+                <button onclick="loadPreset('hiphop')" class="flex-1 md:flex-initial text-xs font-bold px-4 py-2 rounded-lg bg-amber-950/40 border border-amber-900/50 text-amber-400 hover:bg-amber-900/30 transition">
+                    🥁 Hip-Hop BoomBap
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+            
+            <!-- Left Side: Control Knobs & Sound Tweaks (1 col) -->
+            <section class="lg:col-span-1 bg-slate-950/80 border border-slate-900 rounded-2xl p-5 space-y-6 flex flex-col justify-between h-full">
+                <div>
+                    <h2 class="orbitron font-bold text-sm tracking-wider uppercase text-slate-400 pb-3 border-b border-slate-900 mb-5 flex items-center justify-between">
+                        <span>🎚️ PARAMETER RACK</span>
+                        <span id="audio-status-led" class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></span>
+                    </h2>
+
+                    <!-- Tempo (BPM) Slider -->
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400 font-bold tracking-wider">TEMPO</span>
+                            <span class="orbitron font-black text-cyan-400 text-sm" id="bpm-val">120 BPM</span>
+                        </div>
+                        <input type="range" id="slider-bpm" min="60" max="180" value="120" class="w-full">
+                    </div>
+
+                    <!-- Filter Cutoff (Low-Pass Filter) Slider -->
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400 font-bold tracking-wider">LOW-PASS FILTER</span>
+                            <span class="orbitron font-black text-pink-400 text-sm" id="lpf-val">20000 Hz</span>
+                        </div>
+                        <input type="range" id="slider-lpf" min="150" max="20000" value="20000" class="w-full">
+                    </div>
+
+                    <!-- Echo Delay (Feedback) Slider -->
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400 font-bold tracking-wider">ECHO DELAY</span>
+                            <span class="orbitron font-black text-amber-400 text-sm" id="delay-val">0%</span>
+                        </div>
+                        <input type="range" id="slider-delay" min="0" max="80" value="0" class="w-full">
+                    </div>
+                </div>
+
+                <!-- Web Audio Status and Audio context instructions -->
+                <div class="bg-slate-900/40 p-4 border border-slate-800 rounded-xl space-y-2">
+                    <h3 class="text-xs font-bold text-slate-300">💡 디바이스 사용 가이드</h3>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">
+                        화면 우측의 그리드 패드를 활성화한 뒤, 상단 <strong>START ENGINE</strong> 버튼을 누르시면 자바스크립트로 합성된 고품격 사운드가 울려퍼집니다.
+                    </p>
+                    <p class="text-[11px] text-slate-500 leading-relaxed">
+                        * 각 트랙 제목(KICK 등)을 클릭하면 단독 사운드를 테스트해볼 수 있습니다!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Right Side: 16-Step Grid (3 cols) -->
+            <section class="lg:col-span-3 bg-slate-950/80 border border-slate-900 rounded-2xl p-5 md:p-6 space-y-6">
+                
+                <!-- Playhead Progress bar on top of grid -->
+                <div class="relative pt-1">
+                    <div class="flex justify-between text-[10px] orbitron tracking-widest text-slate-600 mb-1">
+                        <span>STEP 1</span>
+                        <span>STEP 5</span>
+                        <span>STEP 9</span>
+                        <span>STEP 13</span>
+                    </div>
+                    <!-- Indicator bulbs container -->
+                    <div id="playhead-container" class="grid grid-cols-16 gap-1 md:gap-2 px-[72px]">
+                        <!-- Dynamic generated bullets inside JS -->
+                    </div>
+                </div>
+
+                <!-- Instruments Grid Wrapper -->
+                <div class="space-y-4">
+                    
+                    <!-- Row: KICK -->
+                    <div class="flex items-center gap-3">
+                        <button onclick="previewInstrument('kick')" class="w-16 text-left group">
+                            <div class="orbitron font-black text-xs text-pink-500 group-hover:text-pink-400 transition-colors flex flex-col">
+                                <span class="tracking-widest">KICK</span>
+                                <span class="text-[9px] text-slate-500">BOOM</span>
+                            </div>
+                        </button>
+                        <div id="row-kick" class="grid grid-cols-16 gap-1 md:gap-2 flex-grow">
+                            <!-- JS will generate 16 pads -->
+                        </div>
+                    </div>
+
+                    <!-- Row: SNARE -->
+                    <div class="flex items-center gap-3">
+                        <button onclick="previewInstrument('snare')" class="w-16 text-left group">
+                            <div class="orbitron font-black text-xs text-cyan-500 group-hover:text-cyan-400 transition-colors flex flex-col">
+                                <span class="tracking-widest">SNARE</span>
+                                <span class="text-[9px] text-slate-500">SNAP</span>
+                            </div>
+                        </button>
+                        <div id="row-snare" class="grid grid-cols-16 gap-1 md:gap-2 flex-grow">
+                            <!-- JS will generate 16 pads -->
+                        </div>
+                    </div>
+
+                    <!-- Row: HI-HAT -->
+                    <div class="flex items-center gap-3">
+                        <button onclick="previewInstrument('hihat')" class="w-16 text-left group">
+                            <div class="orbitron font-black text-xs text-amber-500 group-hover:text-amber-400 transition-colors flex flex-col">
+                                <span class="tracking-widest">HI-HAT</span>
+                                <span class="text-[9px] text-slate-500">TICK</span>
+                            </div>
+                        </button>
+                        <div id="row-hihat" class="grid grid-cols-16 gap-1 md:gap-2 flex-grow">
+                            <!-- JS will generate 16 pads -->
+                        </div>
+                    </div>
+
+                    <!-- Row: SYNTH BASS -->
+                    <div class="flex items-center gap-3">
+                        <button onclick="previewInstrument('synth')" class="w-16 text-left group">
+                            <div class="orbitron font-black text-xs text-purple-500 group-hover:text-purple-400 transition-colors flex flex-col">
+                                <span class="tracking-widest">SYNTH</span>
+                                <span class="text-[9px] text-slate-500">MELODY</span>
+                            </div>
+                        </button>
+                        <div id="row-synth" class="grid grid-cols-16 gap-1 md:gap-2 flex-grow">
+                            <!-- JS will generate 16 pads -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Bottom Instrument Pitch Info / Guide -->
+                <div class="flex items-center justify-between text-xs border-t border-slate-900 pt-4 text-slate-500">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="font-bold">SYNTH PITCH COLOR LEGEND:</span>
+                        <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-slate-800 border border-slate-700"></span> Off</div>
+                        <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-pink-500"></span> C2</div>
+                        <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-cyan-500"></span> D2</div>
+                        <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-amber-500"></span> E2</div>
+                        <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-emerald-500"></span> G2</div>
+                    </div>
+                    <span class="hidden md:inline orbitron text-[10px] tracking-widest text-indigo-500">STRICT SYNC LOCKED</span>
+                </div>
+            </section>
+        </div>
+
+        <!-- Visualizer Area -->
+        <section class="bg-slate-950/80 border border-slate-900 rounded-2xl p-5">
+            <h2 class="orbitron font-bold text-xs tracking-widest uppercase text-slate-500 mb-3 flex items-center justify-between">
+                <span>🔊 REALTIME SPECTROGRAM VISUALIZER</span>
+                <span class="text-[10px] text-teal-400">FPS: 60 - LATENCY: ULTRA LOW</span>
+            </h2>
+            <div class="relative w-full h-28 bg-[#020617] rounded-xl overflow-hidden border border-slate-900">
+                <canvas id="visualizer" class="w-full h-full block"></canvas>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-950 bg-slate-950/40 py-4 px-6 text-center text-xs text-slate-600 relative z-10">
+        <p class="orbitron">&copy; 2026 CYBERPUNK NEONWAVE STUDIO. Synthesized with Web Audio API. Pure Javascript Math.</p>
+    </footer>
+
+    <!-- Audio Error Notification Popup (Hidden by default) -->
+    <div id="error-toast" class="fixed bottom-6 right-6 bg-red-950 border border-red-700/50 text-red-200 px-5 py-3 rounded-xl shadow-2xl hidden z-50 flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <div class="text-xs">
+            <p class="font-bold">오디오 오류 감지</p>
+            <p class="opacity-80">브라우저 보안으로 차단됨. 시작 버튼을 다시 클릭해 오디오를 허용하세요.</p>
+        </div>
+    </div>
+
+    <!-- Script Block -->
+    <script>
+        // Grid setup configurations
+        const STEPS = 16;
+        const tracks = {
+            kick: Array(STEPS).fill(false),
+            snare: Array(STEPS).fill(false),
+            hihat: Array(STEPS).fill(false),
+            synth: Array(STEPS).fill(0) // 0: Off, 1: C2, 2: D2, 3: E2, 4: G2
+        };
+
+        // Presets configurations
+        const PRESETS = {
+            techno: {
+                bpm: 132,
+                kick:  [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+                snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+                hihat: [false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, true],
+                synth: [1, 1, 0, 1, 2, 0, 2, 0, 3, 3, 0, 4, 1, 0, 2, 4]
+            },
+            synthwave: {
+                bpm: 115,
+                kick:  [true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
+                snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+                hihat: [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                synth: [3, 0, 3, 1, 1, 0, 2, 0, 4, 0, 4, 3, 2, 0, 1, 0]
+            },
+            hiphop: {
+                bpm: 92,
+                kick:  [true, false, false, false, false, false, true, false, false, true, true, false, false, false, false, false],
+                snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+                hihat: [true, false, true, false, true, false, true, true, true, false, true, false, true, false, true, true],
+                synth: [1, 0, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0, 2, 0, 0, 0]
+            }
+        };
+
+        // DOM elements
+        const btnPlay = document.getElementById('btn-play');
+        const playText = document.getElementById('play-text');
+        const playIcon = document.getElementById('play-icon');
+        const sliderBpm = document.getElementById('slider-bpm');
+        const valBpm = document.getElementById('bpm-val');
+        const sliderLpf = document.getElementById('slider-lpf');
+        const valLpf = document.getElementById('lpf-val');
+        const sliderDelay = document.getElementById('slider-delay');
+        const valDelay = document.getElementById('delay-val');
+        const canvas = document.getElementById('visualizer');
+        const ctx = canvas.getContext('2d');
+        const ledIndicator = document.getElementById('audio-status-led');
+
+        // Web Audio Context variables
+        let audioCtx = null;
+        let isPlaying = false;
+        let bpm = 120;
+        let currentStep = 0;
+        let nextStepTime = 0.0; // Audio timeline marker when next step plays
+        let scheduleAheadTime = 0.1; // Scheduling lookahead windows (sec)
+        let timerID = null;
+        let noiseBuffer = null;
+
+        // Web Audio Nodes (Shared chain)
+        let mixerNode = null;
+        let filterNode = null;
+        let delayNode = null;
+        let delayFeedbackNode = null;
+        let delayGainNode = null;
+        let analyserNode = null;
+
+        // Synth pitches mappings
+        const synthNotes = {
+            1: 65.41,  // C2
+            2: 73.42,  // D2
+            3: 82.41,  // E2
+            4: 98.00   // G2
+        };
+
+        // Custom grid styles for Tailwind configurations (Dynamically inject class mapping fallback)
+        // Since custom cols are used (grid-cols-16), adding dynamic tailwind grid structure
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .grid-cols-16 { grid-template-columns: repeat(16, minmax(0, 1fr)); }
+        `;
+        document.head.appendChild(style);
+
+        // Web Audio Initializer
+        async function initAudio() {
+            if (audioCtx) return;
+
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 1. Create Nodes
+                mixerNode = audioCtx.createGain();
+                filterNode = audioCtx.createBiquadFilter();
+                delayNode = audioCtx.createDelay(2.0);
+                delayFeedbackNode = audioCtx.createGain();
+                delayGainNode = audioCtx.createGain();
+                analyserNode = audioCtx.createAnalyser();
+
+                // Connect Master Filter
+                filterNode.type = 'lowpass';
+                filterNode.frequency.value = parseInt(sliderLpf.value);
+
+                // Setup Delay FX parameters
+                delayNode.delayTime.value = 0.3; // Approx 300ms delay time
+                delayFeedbackNode.gain.value = 0.0; // Feedback starts off
+                delayGainNode.gain.value = 0.0; // Mix begins dry
+
+                // Internal delay loop routing
+                delayNode.connect(delayFeedbackNode);
+                delayFeedbackNode.connect(delayNode);
+
+                // Master Routing Structure:
+                // Sources -> Mixer -> Filter (LPF) -> Analyser -> Destination
+                //                      |--> Delay Gain -> Delay Node -> Analyser
+                mixerNode.connect(filterNode);
+                filterNode.connect(analyserNode);
+
+                // Sidechain Delay mix:
+                filterNode.connect(delayGainNode);
+                delayGainNode.connect(delayNode);
+                delayNode.connect(analyserNode);
+
+                analyserNode.connect(audioCtx.destination);
+                analyserNode.fftSize = 256;
+
+                // Create custom White Noise Buffer for Snare and Hi-Hat synthesis
+                createNoiseBuffer();
+
+                ledIndicator.classList.remove('bg-red-500', 'shadow-[0_0_8px_#ef4444]');
+                ledIndicator.classList.add('bg-emerald-500', 'shadow-[0_0_12px_#10b981]');
+
+                // Start Visualizer Loop once Audio starts
+                drawVisualizer();
+
+            } catch (err) {
+                console.error("Audio Context initialization failed: ", err);
+                showToastError();
+            }
+        }
+
+        // Noise Generator
+        function createNoiseBuffer() {
+            const bufferSize = audioCtx.sampleRate * 2; // 2 seconds of noise
+            noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+        }
+
+        // -------------------------------------------------------------
+        // AUDIO SYNTHESIZERS ENGINES
+        // -------------------------------------------------------------
+
+        // Kick Drum Synthesizer: Sinewave pitch-swept downward exponentially
+        function playKickSynth(time) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.connect(gain);
+            gain.connect(mixerNode);
+
+            osc.type = 'sine';
+            // Start at punchy 150Hz sweep to heavy sub-bass 40Hz in a brief instant
+            osc.frequency.setValueAtTime(150, time);
+            osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.15);
+
+            gain.gain.setValueAtTime(1.0, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.22);
+
+            osc.start(time);
+            osc.stop(time + 0.25);
+        }
+
+        // Snare Drum Synthesizer: High-pass filtered White noise blended with body oscillator
+        function playSnareSynth(time) {
+            if (!noiseBuffer) return;
+
+            // 1. Noise Snap Component
+            const noiseSource = audioCtx.createBufferSource();
+            noiseSource.buffer = noiseBuffer;
+
+            const noiseFilter = audioCtx.createBiquadFilter();
+            noiseFilter.type = 'highpass';
+            noiseFilter.frequency.setValueAtTime(1200, time);
+
+            const noiseGain = audioCtx.createGain();
+            noiseSource.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(mixerNode);
+
+            noiseGain.gain.setValueAtTime(0.65, time);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, time + 0.18);
+
+            // 2. Body Core component (Sine oscillator)
+            const bodyOsc = audioCtx.createOscillator();
+            const bodyGain = audioCtx.createGain();
+
+            bodyOsc.connect(bodyGain);
+            bodyGain.connect(mixerNode);
+
+            bodyOsc.type = 'triangle';
+            bodyOsc.frequency.setValueAtTime(180, time); // Snare core punch
+
+            bodyGain.gain.setValueAtTime(0.4, time);
+            bodyGain.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+
+            noiseSource.start(time);
+            noiseSource.stop(time + 0.2);
+            bodyOsc.start(time);
+            bodyOsc.stop(time + 0.1);
+        }
+
+        // Hi-Hat Synthesizer: Band-pass filtered White noise with micro envelope decay
+        function playHihatSynth(time) {
+            if (!noiseBuffer) return;
+
+            const noiseSource = audioCtx.createBufferSource();
+            noiseSource.buffer = noiseBuffer;
+
+            const hatFilter = audioCtx.createBiquadFilter();
+            hatFilter.type = 'bandpass';
+            hatFilter.frequency.setValueAtTime(8000, time); // Extremely bright metallic range
+
+            const hatGain = audioCtx.createGain();
+            noiseSource.connect(hatFilter);
+            hatFilter.connect(hatGain);
+            hatGain.connect(mixerNode);
+
+            hatGain.gain.setValueAtTime(0.35, time);
+            hatGain.gain.exponentialRampToValueAtTime(0.001, time + 0.05); // Ultra snappy decay
+
+            noiseSource.start(time);
+            noiseSource.stop(time + 0.06);
+        }
+
+        // Synth Bass Synthesizer: Squelchy Lowpassed Sawtooth wavetable wave
+        function playSynthBass(noteValue, time) {
+            const frequency = synthNotes[noteValue];
+            if (!frequency) return;
+
+            const osc = audioCtx.createOscillator();
+            const synthFilter = audioCtx.createBiquadFilter();
+            const gain = audioCtx.createGain();
+
+            osc.connect(synthFilter);
+            synthFilter.connect(gain);
+            gain.connect(mixerNode);
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(frequency, time);
+
+            // Funky lowpass envelope sweeping up then down
+            synthFilter.type = 'lowpass';
+            synthFilter.frequency.setValueAtTime(150, time);
+            synthFilter.frequency.exponentialRampToValueAtTime(850, time + 0.06);
+            synthFilter.frequency.exponentialRampToValueAtTime(120, time + 0.22);
+            synthFilter.Q.setValueAtTime(6, time); // Extra juicy resonancy
+
+            gain.gain.setValueAtTime(0.42, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.25);
+
+            osc.start(time);
+            osc.stop(time + 0.27);
+        }
+
+        // -------------------------------------------------------------
+        // GRAPHICAL UI & GRID GENERATION
+        // -------------------------------------------------------------
+
+        // Create Grid elements dynamically
+        function setupGridUI() {
+            const rowKick = document.getElementById('row-kick');
+            const rowSnare = document.getElementById('row-snare');
+            const rowHihat = document.getElementById('row-hihat');
+            const rowSynth = document.getElementById('row-synth');
+            const playheadContainer = document.getElementById('playhead-container');
+
+            rowKick.innerHTML = '';
+            rowSnare.innerHTML = '';
+            rowHihat.innerHTML = '';
+            rowSynth.innerHTML = '';
+            playheadContainer.innerHTML = '';
+
+            for (let i = 0; i < STEPS; i++) {
+                // Playhead bulbs
+                const led = document.createElement('div');
+                led.id = `led-${i}`;
+                led.className = `h-2 rounded-full bg-slate-800 transition-all duration-75`;
+                playheadContainer.appendChild(led);
+
+                // Kick Pads (Toggle style)
+                const kickPad = document.createElement('button');
+                kickPad.id = `kick-${i}`;
+                kickPad.className = `aspect-square rounded-lg border border-slate-900 bg-slate-900/60 active:scale-90 transition-all focus:outline-none`;
+                kickPad.addEventListener('click', () => togglePad('kick', i));
+                rowKick.appendChild(kickPad);
+
+                // Snare Pads
+                const snarePad = document.createElement('button');
+                snarePad.id = `snare-${i}`;
+                snarePad.className = `aspect-square rounded-lg border border-slate-900 bg-slate-900/60 active:scale-90 transition-all focus:outline-none`;
+                snarePad.addEventListener('click', () => togglePad('snare', i));
+                rowSnare.appendChild(snarePad);
+
+                // Hihat Pads
+                const hihatPad = document.createElement('button');
+                hihatPad.id = `hihat-${i}`;
+                hihatPad.className = `aspect-square rounded-lg border border-slate-900 bg-slate-900/60 active:scale-90 transition-all focus:outline-none`;
+                hihatPad.addEventListener('click', () => togglePad('hihat', i));
+                rowHihat.appendChild(hihatPad);
+
+                // Synth Pads (State Machine cycle: 0 -> 1 -> 2 -> 3 -> 4)
+                const synthPad = document.createElement('button');
+                synthPad.id = `synth-${i}`;
+                synthPad.className = `aspect-square rounded-lg border border-slate-900 bg-slate-900/60 active:scale-90 transition-all focus:outline-none flex items-center justify-center text-[10px] orbitron font-bold text-slate-600/50`;
+                synthPad.addEventListener('click', () => cycleSynthPad(i));
+                rowSynth.appendChild(synthPad);
+            }
+            updateGridColors();
+        }
+
+        // Toggle Standard Drum Pads
+        function togglePad(trackName, index) {
+            tracks[trackName][index] = !tracks[trackName][index];
+            updateGridColors();
+            
+            // Audio preview if Engine already unlocked
+            if (tracks[trackName][index] && audioCtx) {
+                previewSound(trackName);
+            }
+        }
+
+        // Cycle Multi-pitched Synth Bass Pads
+        function cycleSynthPad(index) {
+            let state = tracks.synth[index];
+            state = (state + 1) % 5; // 0, 1, 2, 3, 4
+            tracks.synth[index] = state;
+            updateGridColors();
+
+            // Preview Bass Note if valid Note active
+            if (state > 0 && audioCtx) {
+                playSynthBass(state, audioCtx.currentTime);
+            }
+        }
+
+        // Trigger Single Preview for click feedback
+        function previewInstrument(trackName) {
+            if (!audioCtx) {
+                unlockAudioContext();
+            } else {
+                previewSound(trackName);
+            }
+        }
+
+        function previewSound(trackName) {
+            if (!audioCtx) return;
+            const time = audioCtx.currentTime;
+            if (trackName === 'kick') playKickSynth(time);
+            if (trackName === 'snare') playSnareSynth(time);
+            if (trackName === 'hihat') playHihatSynth(time);
+            if (trackName === 'synth') playSynthBass(1, time); // C2 preview
+        }
+
+        // Color Update Engine
+        function updateGridColors() {
+            for (let i = 0; i < STEPS; i++) {
+                // Play Group Borders (Beat divisions: 1-4, 5-8, 9-12, 13-16 grouping lines)
+                const beatDivGroup = Math.floor(i / 4) % 2 === 0;
+
+                // Kick Colors
+                const kp = document.getElementById(`kick-${i}`);
+                if (tracks.kick[i]) {
+                    kp.className = `aspect-square rounded-lg bg-pink-500 border border-pink-400 neon-glow-pink scale-95 transition-all`;
+                } else {
+                    kp.className = `aspect-square rounded-lg border ${beatDivGroup ? 'border-slate-800' : 'border-slate-900'} bg-slate-950/80 hover:bg-slate-900 transition-all`;
+                }
+
+                // Snare Colors
+                const sp = document.getElementById(`snare-${i}`);
+                if (tracks.snare[i]) {
+                    sp.className = `aspect-square rounded-lg bg-cyan-500 border border-cyan-400 neon-glow-blue scale-95 transition-all`;
+                } else {
+                    sp.className = `aspect-square rounded-lg border ${beatDivGroup ? 'border-slate-800' : 'border-slate-900'} bg-slate-950/80 hover:bg-slate-900 transition-all`;
+                }
+
+                // Hi-Hat Colors
+                const hp = document.getElementById(`hihat-${i}`);
+                if (tracks.hihat[i]) {
+                    hp.className = `aspect-square rounded-lg bg-amber-500 border border-amber-400 neon-glow-amber scale-95 transition-all`;
+                } else {
+                    hp.className = `aspect-square rounded-lg border ${beatDivGroup ? 'border-slate-800' : 'border-slate-900'} bg-slate-950/80 hover:bg-slate-900 transition-all`;
+                }
+
+                // Synth Bass Colors with Note values printed
+                const syp = document.getElementById(`synth-${i}`);
+                const state = tracks.synth[i];
+                if (state === 0) {
+                    syp.className = `aspect-square rounded-lg border ${beatDivGroup ? 'border-slate-800' : 'border-slate-900'} bg-slate-950/80 hover:bg-slate-900 text-slate-800 transition-all text-[10px] orbitron font-bold flex items-center justify-center`;
+                    syp.innerText = '—';
+                } else if (state === 1) {
+                    syp.className = `aspect-square rounded-lg bg-pink-600 border border-pink-400 text-slate-950 neon-glow-pink scale-95 transition-all text-[10px] orbitron font-bold flex items-center justify-center`;
+                    syp.innerText = 'C';
+                } else if (state === 2) {
+                    syp.className = `aspect-square rounded-lg bg-cyan-600 border border-cyan-400 text-slate-950 neon-glow-blue scale-95 transition-all text-[10px] orbitron font-bold flex items-center justify-center`;
+                    syp.innerText = 'D';
+                } else if (state === 3) {
+                    syp.className = `aspect-square rounded-lg bg-amber-600 border border-amber-400 text-slate-950 neon-glow-amber scale-95 transition-all text-[10px] orbitron font-bold flex items-center justify-center`;
+                    syp.innerText = 'E';
+                } else if (state === 4) {
+                    syp.className = `aspect-square rounded-lg bg-emerald-600 border border-emerald-400 text-slate-950 neon-glow-emerald scale-95 transition-all text-[10px] orbitron font-bold flex items-center justify-center`;
+                    syp.innerText = 'G';
+                }
+            }
+        }
+
+        // -------------------------------------------------------------
+        // SCHEDULER & PLAY ENGINE (Tale of Two Clocks Pattern)
+        // -------------------------------------------------------------
+
+        // Web Audio beat lookahead scheduler
+        function scheduler() {
+            while (nextStepTime < audioCtx.currentTime + scheduleAheadTime) {
+                schedulePlayEvent(currentStep, nextStepTime);
+                advanceNextStep();
+            }
+            timerID = setTimeout(scheduler, 25); // Poll every 25ms
+        }
+
+        function schedulePlayEvent(step, time) {
+            // Schedule Web Audio synthesis notes precisely on timeline
+            if (tracks.kick[step]) playKickSynth(time);
+            if (tracks.snare[step]) playSnareSynth(time);
+            if (tracks.hihat[step]) playHihatSynth(time);
+            if (tracks.synth[step] > 0) playSynthBass(tracks.synth[step], time);
+
+            // Queue the visual synchronization on UI thread
+            const delayInMs = (time - audioCtx.currentTime) * 1000;
+            setTimeout(() => {
+                highlightPlayhead(step);
+            }, Math.max(0, delayInMs));
+        }
+
+        function highlightPlayhead(step) {
+            // Reset all leds to dormant look
+            for (let i = 0; i < STEPS; i++) {
+                const led = document.getElementById(`led-${i}`);
+                if (led) {
+                    led.className = `h-2 rounded-full bg-slate-800 transition-all duration-75`;
+                }
+            }
+
+            // Highlighting Current Playing Step Led
+            const activeLed = document.getElementById(`led-${step}`);
+            if (activeLed) {
+                activeLed.className = `h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee] scale-y-125 transition-all duration-75`;
+            }
+        }
+
+        function advanceNextStep() {
+            // Tempo maths: Seconds per beat = 60 / BPM.
+            // A step is a 16th note, so quarter-note/4
+            const secondsPerBeat = 60.0 / bpm;
+            const stepDuration = secondsPerBeat / 4; 
+            
+            nextStepTime += stepDuration;
+            currentStep = (currentStep + 1) % STEPS; // Loop back after 16
+        }
+
+        // -------------------------------------------------------------
+        // INTERACTIVE ENGINE ACTIONS & TRIGGERS
+        // -------------------------------------------------------------
+
+        function togglePlayback() {
+            if (!audioCtx) {
+                unlockAudioContext().then(() => {
+                    startLoop();
+                });
+                return;
+            }
+
+            if (isPlaying) {
+                stopLoop();
+            } else {
+                startLoop();
+            }
+        }
+
+        function startLoop() {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            isPlaying = true;
+            currentStep = 0;
+            nextStepTime = audioCtx.currentTime + 0.05;
+            scheduler();
+
+            // Set UI to Playing mode
+            playText.innerText = "HALT SYNTH ENGINE";
+            btnPlay.classList.remove('from-emerald-500', 'to-teal-500');
+            btnPlay.classList.add('from-rose-600', 'to-pink-600', 'neon-glow-pink');
+            playIcon.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                    <rect x="4" y="4" width="16" height="16" rx="2" />
+                </svg>
+            `;
+        }
+
+        function stopLoop() {
+            isPlaying = false;
+            clearTimeout(timerID);
+            
+            // Set UI back to Stopped mode
+            playText.innerText = "START SYNTH ENGINE";
+            btnPlay.classList.remove('from-rose-600', 'to-pink-600', 'neon-glow-pink');
+            btnPlay.classList.add('from-emerald-500', 'to-teal-500');
+            playIcon.innerHTML = `<path d="M4.5 3.5v13L16.5 10z"/>`;
+
+            // Dim Playheads
+            for (let i = 0; i < STEPS; i++) {
+                const led = document.getElementById(`led-${i}`);
+                if (led) {
+                    led.className = `h-2 rounded-full bg-slate-800 transition-all`;
+                }
+            }
+        }
+
+        // Unlock browser security block on audio
+        async function unlockAudioContext() {
+            await initAudio();
+            if (audioCtx && audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
+        }
+
+        // Load Preset Files
+        function loadPreset(presetName) {
+            const data = PRESETS[presetName];
+            if (!data) return;
+
+            // Stop playhead first
+            const wasPlaying = isPlaying;
+            if (isPlaying) stopLoop();
+
+            bpm = data.bpm;
+            sliderBpm.value = bpm;
+            valBpm.innerText = `${bpm} BPM`;
+
+            tracks.kick = [...data.kick];
+            tracks.snare = [...data.snare];
+            tracks.hihat = [...data.hihat];
+            tracks.synth = [...data.synth];
+
+            updateGridColors();
+
+            if (wasPlaying) {
+                // Delayed auto re-triggering to prevent crash
+                setTimeout(() => {
+                    startLoop();
+                }, 100);
+            } else if (!audioCtx) {
+                // Initialize audio context preview on first action click
+                unlockAudioContext();
+            }
+        }
+
+        // Clear Grid
+        document.getElementById('btn-clear').addEventListener('click', () => {
+            tracks.kick.fill(false);
+            tracks.snare.fill(false);
+            tracks.hihat.fill(false);
+            tracks.synth.fill(0);
+            updateGridColors();
+        });
+
+        // Random Beat Generator (Ensures it sounds musical, not totally random)
+        document.getElementById('btn-random').addEventListener('click', () => {
+            for (let i = 0; i < STEPS; i++) {
+                // 4/4 Kick rhythm patterns
+                tracks.kick[i] = i % 4 === 0 ? true : (Math.random() < 0.15);
+                // Regular snares
+                tracks.snare[i] = i % 8 === 4 ? true : (Math.random() < 0.1);
+                // Funky hi-hat division
+                tracks.hihat[i] = i % 2 === 0 ? (Math.random() < 0.8) : (Math.random() < 0.3);
+                // Random bass runs
+                tracks.synth[i] = Math.random() < 0.4 ? Math.floor(Math.random() * 4) + 1 : 0;
+            }
+            updateGridColors();
+            if (!audioCtx) unlockAudioContext();
+        });
+
+        // -------------------------------------------------------------
+        // RACK CONTROLLERS (SLIDERS CHANGE EVENTS)
+        // -------------------------------------------------------------
+
+        // BPM slider event
+        sliderBpm.addEventListener('input', (e) => {
+            bpm = parseInt(e.target.value);
+            valBpm.innerText = `${bpm} BPM`;
+        });
+
+        // LPF slider event
+        sliderLpf.addEventListener('input', (e) => {
+            const hz = parseInt(e.target.value);
+            valLpf.innerText = `${hz} Hz`;
+            if (filterNode) {
+                filterNode.frequency.setValueAtTime(hz, audioCtx.currentTime);
+            }
+        });
+
+        // Delay slider event
+        sliderDelay.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            valDelay.innerText = `${val}%`;
+
+            if (audioCtx) {
+                // Scale value to audio gains
+                const mixGain = (val / 100) * 0.8;
+                const feedbackGain = (val / 100) * 0.7;
+
+                delayGainNode.gain.setValueAtTime(mixGain, audioCtx.currentTime);
+                delayFeedbackNode.gain.setValueAtTime(feedbackGain, audioCtx.currentTime);
+            }
+        });
+
+        // Trigger Audio Context initialization on first general click if not run
+        btnPlay.addEventListener('click', togglePlayback);
+
+        // Toast error handling helper
+        function showToastError() {
+            const toast = document.getElementById('error-toast');
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 6000);
+        }
+
+        // -------------------------------------------------------------
+        // REALTIME VISUALIZER (CANVAS)
+        // -------------------------------------------------------------
+
+        // Adjust Canvas bounding sizing on window adjustments
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function drawVisualizer() {
+            if (!isPlaying || !analyserNode) {
+                // Keep drawing silent baseline if not active
+                drawSilentVisualizer();
+                requestAnimationFrame(drawVisualizer);
+                return;
+            }
+
+            requestAnimationFrame(drawVisualizer);
+
+            const bufferLength = analyserNode.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyserNode.getByteFrequencyData(dataArray);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw stylish dark background mesh lines inside visualization box
+            ctx.strokeStyle = '#1e293b40';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+
+            const barWidth = (canvas.width / bufferLength) * 2.2;
+            let barHeight;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                barHeight = dataArray[i] * 0.75;
+
+                // Color gradients based on spectrum ranges
+                const r = 236 - (i * 0.8);
+                const g = 72 + (i * 1.1);
+                const b = 153 + (i * 0.5);
+
+                // Glow styling
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.5)`;
+
+                ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
+
+                x += barWidth + 1;
+            }
+            ctx.shadowBlur = 0; // reset
+        }
+
+        function drawSilentVisualizer() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#1e293b40';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+
+            // Draw a steady silent line in the middle
+            ctx.beginPath();
+            ctx.strokeStyle = '#312e81';
+            ctx.lineWidth = 2;
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+        }
+
+        // On Load initialization
+        window.onload = function() {
+            setupGridUI();
+            resizeCanvas();
+            drawSilentVisualizer();
+        };
+
+    </script>
+</body>
+</html>
